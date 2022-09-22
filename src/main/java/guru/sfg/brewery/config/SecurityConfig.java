@@ -11,7 +11,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -59,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return SfgPasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    @Override
+    /*@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
                 .withUser("spring")
@@ -80,9 +84,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .password("{ldap}{SSHA}484hWH9aHb7LKxDMSheVHTQ8577GpszTJx1X0A==")
 //                .password("tiger")
                 .roles("CUSTOMER");
-    }
+    }*/
 
-    //    @Override
+//    @Override
 //    @Bean
 //    protected UserDetailsService userDetailsService() {
 //
@@ -98,7 +102,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .roles("USER")
 //                .build();
 //
-//        return new InMemoryUserDetailsManager(admin, user);
+//        UserDetails scott = User.withDefaultPasswordEncoder()
+//                .username("scott")
+//                .password("tiger")
+//                .roles("COSTUMER")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(admin, user, scott);
 //    }
 
 }
