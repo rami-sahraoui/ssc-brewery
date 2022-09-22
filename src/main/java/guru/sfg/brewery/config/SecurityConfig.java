@@ -35,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         ((HttpSecurity)((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl)http
                 .authorizeRequests(authorize -> {
                     authorize
+                            .antMatchers("/h2-console/**").permitAll() // do not use in production
                             .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
                             .antMatchers("/beers/find", "/beers*").permitAll()
                             .antMatchers(HttpMethod.GET, "/api/v1/beer/**").permitAll()
@@ -44,6 +45,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()).authenticated()
                 .and()).formLogin()
                 .and().httpBasic();
+
+                // h2 console config
+                http.headers().frameOptions().sameOrigin();
     }
     @Bean
     PasswordEncoder passwordEncoder() {
