@@ -51,8 +51,9 @@ class BeerRestControllerIT extends BaseIT {
 
     @ParameterizedTest(name = "#{index} with [{arguments}]")
     @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAllUsers")
-    void findBeersAUTH() throws Exception{
-        mockMvc.perform(get("/api/v1/beer"))
+    void findBeersAUTH(String user, String pwd) throws Exception{
+        mockMvc.perform(get("/api/v1/beer")
+                        .with(httpBasic(user, pwd)))
                 .andExpect(status().isOk());
     }
 
@@ -64,8 +65,9 @@ class BeerRestControllerIT extends BaseIT {
 
     @ParameterizedTest(name = "#{index} with [{arguments}]")
     @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAllUsers")
-    void findBeerByIdAUTH() throws Exception{
-        mockMvc.perform(get("/api/v1/beer/" + beerToManipulate().getId()))
+    void findBeerByIdAUTH(String user, String pwd) throws Exception{
+        mockMvc.perform(get("/api/v1/beer/" + beerToManipulate().getId())
+                        .with(httpBasic(user, pwd)))
                 .andExpect(status().isOk());
     }
 
@@ -77,8 +79,9 @@ class BeerRestControllerIT extends BaseIT {
 
     @ParameterizedTest(name = "#{index} with [{arguments}]")
     @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAllUsers")
-    void findBeerByUpsAUTH() throws Exception{
-        mockMvc.perform(get("/api/v1/beerUpc/0631234200036"))
+    void findBeerByUpsAUTH(String user, String pwd) throws Exception{
+        mockMvc.perform(get("/api/v1/beerUpc/0631234200036")
+                        .with(httpBasic(user, pwd)))
                 .andExpect(status().isOk());
     }
 
