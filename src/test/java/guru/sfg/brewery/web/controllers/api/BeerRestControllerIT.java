@@ -8,6 +8,8 @@ import guru.sfg.brewery.web.model.BeerStyleEnum;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -44,11 +46,25 @@ class BeerRestControllerIT extends BaseIT {
     @Test
     void findBeers() throws Exception{
         mockMvc.perform(get("/api/v1/beer"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @ParameterizedTest(name = "#{index} with [{arguments}]")
+    @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAllUsers")
+    void findBeersAUTH() throws Exception{
+        mockMvc.perform(get("/api/v1/beer"))
                 .andExpect(status().isOk());
     }
 
     @Test
     void findBeerById() throws Exception{
+        mockMvc.perform(get("/api/v1/beer/" + beerToManipulate().getId()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @ParameterizedTest(name = "#{index} with [{arguments}]")
+    @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAllUsers")
+    void findBeerByIdAUTH() throws Exception{
         mockMvc.perform(get("/api/v1/beer/" + beerToManipulate().getId()))
                 .andExpect(status().isOk());
     }
@@ -56,14 +72,13 @@ class BeerRestControllerIT extends BaseIT {
     @Test
     void findBeerByUps() throws Exception{
         mockMvc.perform(get("/api/v1/beerUpc/0631234200036"))
-                .andExpect(status().isOk());
+                .andExpect(status().isUnauthorized());
     }
 
-    @Test
-    void findBeerFromADMIN() throws Exception{
-        mockMvc.perform(get("/beers")
-                        .param("beerName","")
-                        .with(httpBasic("spring", "guru")))
+    @ParameterizedTest(name = "#{index} with [{arguments}]")
+    @MethodSource("guru.sfg.brewery.web.controllers.BeerControllerIT#getStreamAllUsers")
+    void findBeerByUpsAUTH() throws Exception{
+        mockMvc.perform(get("/api/v1/beerUpc/0631234200036"))
                 .andExpect(status().isOk());
     }
 
