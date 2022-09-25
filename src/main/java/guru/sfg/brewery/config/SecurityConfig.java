@@ -12,45 +12,34 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public RestHeaderAuthFilter restHeaderAuthFilter(AuthenticationManager authenticationManager) {
-        RestHeaderAuthFilter filter = new RestHeaderAuthFilter(new AntPathRequestMatcher("/api/**"));
-        filter.setAuthenticationManager(authenticationManager);
-        return filter;
+    // needed for use with Spring Data JPA SPeL
+    @Bean
+    public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+        return new SecurityEvaluationContextExtension();
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.addFilterBefore(restHeaderAuthFilter(authenticationManager()),
-                UsernamePasswordAuthenticationFilter.class)
-            .csrf().disable();
-
-        ((HttpSecurity)((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl)http
+                http
                 .authorizeRequests(authorize -> {
                     authorize
-                            .antMatchers("/h2-console/**").permitAll() // do not use in production
-                            .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll()
-//                            .antMatchers("/beers/find", "/beers*").permitAll()
-//                            .antMatchers(HttpMethod.GET, "/api/v1/beer/**").permitAll()
-//                            .antMatchers(HttpMethod.DELETE, "/api/v1/beer/**").hasRole("ADMIN")
-//                            .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").permitAll()
-                            .mvcMatchers(HttpMethod.GET,"/brewery/breweries")
-                                .hasAnyRole("ADMIN","CUSTOMER")
-                            .mvcMatchers(HttpMethod.GET,"/brewery/api/v1/breweries")
-                                .hasAnyRole("ADMIN","CUSTOMER");
-                })
+                            .antMatchers("/h2-console/**").permitAll() //do not use in production!
+                            .antMatchers("/", "/webjars/**", "/login", "/resources/**").permitAll();
+                } )
                 .authorizeRequests()
-                .anyRequest()).authenticated()
-                .and()).formLogin()
-                .and().httpBasic();
+                .anyRequest().authenticated()
+                .and()
+                .formLogin().and()
+                .httpBasic()
+                .and().csrf().disable();
 
                 // h2 console config
                 http.headers().frameOptions().sameOrigin();
